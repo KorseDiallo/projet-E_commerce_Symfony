@@ -19,6 +19,7 @@ class ProductType extends AbstractType
             ->add('nom')
             ->add('description')
             ->add('prix')
+            ->add('stock')
             ->add('image',FileType::class,[
                 'label' =>'image du produit',
                 'mapped'=>false,
@@ -31,6 +32,7 @@ class ProductType extends AbstractType
                             'image/png',
                             'image/jpeg',
                         ],
+                        'maxSizeMessage'=>"votre image de produit ne doit pas depasser les 1024ko",
                         'mimeTypesMessage'=>"votre image de produit doit être au format valide (png,jpg,jpeg)"
                     ])
                 ]
