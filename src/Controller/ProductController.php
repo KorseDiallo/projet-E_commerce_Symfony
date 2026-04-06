@@ -81,12 +81,29 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager,SluggerInterface $slugger): Response
     {
         $form = $this->createForm(ProductUpdateType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+          $image= $form->get('image')->getData();
+            if($image){
+                $originalName= pathinfo($image->getClientOriginalName(),PATHINFO_FILENAME);
+                $safeFileName= $slugger->slug($originalName);
+                $newFileName= $safeFileName.'-'.uniqid().'.'.$image->guessExtension();
+
+                try {
+                    $image->move($this->getParameter('image_dir'),$newFileName);
+                   
+                } catch (FileException $exception) {
+                     $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
+                   
+                }
+                $product->setImage($newFileName);
+            }
+
             $entityManager->flush();
             $this->addFlash('success','Votre produit a été modifié avec succès');
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
