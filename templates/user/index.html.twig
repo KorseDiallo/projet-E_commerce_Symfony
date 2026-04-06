@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateurs{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Utilisateurs</h1>
+        {% include "layouts/_flash_message.html.twig" %}
+        <table class="table">
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Action</th>
+            </tr>
+            {% for user in users %}
+                <tr>
+                    <td>{{user.id}}</td>
+                    <td>{{user.Nom}}</td>
+                    <td>{{user.Prenom}}</td>
+                    <td>{{user.email}}</td>
+                    <td>
+                         {% if 'ROLE_ADMIN' in user.roles %}
+                           <span class="text-primary">Administrateur</span> 
+                        {% elseif 'ROLE_EDITOR' in user.roles %}
+                           <span class="text-success">Editeur</span> 
+                        {% else %}
+                            <span class="text-secondary">Client</span>
+                        {% endif %}
+                    </td>
+                    {# <td>
+                        {% for role in user.roles %}
+                            {{role}}
+                        {% endfor %}
+                    </td> #}
+                    <td>
+                        {% if ('ROLE_ADMIN' in user.roles)==false %}
+                            {% if ('ROLE_EDITOR' in user.roles)==false %}
+                                <a onclick="return confirm('Voulez-vous vraiment affecter le rôle editeur à cet utilisateur ?')" href="{{path('app_user_to_editor',{'id':user.id})}}" class="btn btn-primary">Ajouter comme Editeur</a>
+                                {% else %}
+                                  <a onclick="return confirm('Voulez-vous vraiment retirer le rôle editeur à cet utilisateur ?')" href="{{path('app_user_remove_editor_role',{'id':user.id})}}" class="btn btn-warning">Retirer comme Editeur</a>
+                            {% endif %}
+                            
+                            
+                             <a onclick="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?')" href="{{path('app_user_remove',{'id':user.id})}}" class="btn btn-danger">Supprimer</a>
+                        {% endif %}
+                        
+                       
+                    </td>
+                     
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
