@@ -6,8 +6,10 @@ use App\Entity\Product;
 use App\Entity\SubCategory;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class ProductUpdateType extends AbstractType
 {
@@ -17,7 +19,23 @@ class ProductUpdateType extends AbstractType
             ->add('nom')
             ->add('description')
             ->add('prix')
-            ->add('image')
+            ->add('image',FileType::class,[
+                'label' =>'image du produit',
+                'mapped'=>false,
+                'required'=>false,
+                'constraints'=>[
+                    new File([
+                        "maxSize"=>"1024k",
+                        "mimeTypes"=>[
+                            'image/jpg',
+                            'image/png',
+                            'image/jpeg',
+                        ],
+                        'maxSizeMessage'=>"votre image de produit ne doit pas depasser les 1024ko",
+                        'mimeTypesMessage'=>"votre image de produit doit être au format valide (png,jpg,jpeg)"
+                    ])
+                ]
+            ])
             // ->add('stock')
             ->add('subCategories', EntityType::class, [
                 'class' => SubCategory::class,
